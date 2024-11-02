@@ -5,7 +5,7 @@ from sim.sim2d import sim_run
 options = {}
 options['FIG_SIZE'] = [8,8]
 
-options['DRIVE_IN_CIRCLE'] = False
+options['DRIVE_IN_CIRCLE'] = True
 # If False, measurements will be x,y.
 # If True, measurements will be x,y, and current angle of the car.
 # Required if you want to pass the driving in circle.
@@ -14,8 +14,8 @@ options['RECIEVE_INPUTS'] = False
 
 # This filter uses four states x, y, x dot, y dot
 # Works ok ish for turns
-# However, if the vehicle makes a circle it doesn't converge at all.
-# To overcome, this we need to use a five state transition matrix.
+# However, if the vehicle makes a circle it doesn't converge well.
+# To overcome, this we need to use inputs.
 class KalmanFilter:
     def __init__(self):
         # Initial State
@@ -70,8 +70,8 @@ class KalmanFilter:
         # The Kalman filter doesn't become too confident on its current state.
         #self.P[0,0] += 0.001 # Commented. Felt like not required for position value
         #self.P[1,1] += 0.001 # Commented. Felt like not required for position value
-        self.P[2,2] += 0.001 # Incrementing the velocity uncertainity alone because this will ultimately affect the position
-        self.P[3,3] += 0.001
+        self.P[2,2] += 0.01 # Incrementing the velocity uncertainity alone because this will ultimately affect the position
+        self.P[3,3] += 0.01
         return [self.x[0], self.x[1]]
 
     def recieve_inputs(self, u_steer, u_pedal):
